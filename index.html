@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8" />
+<head>
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css"/>
+    
+<!--Librerías para llamar la función cluster map-->
+<!--<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.5.0/MarkerCluster.Default.css" />
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.5.0/leaflet.markercluster.js"></script>
+	
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+     hasta aca estan las librerias de cluster -->
+     <script type="text/javascript" src="tlc1_zipcodes_copia.js"></script>  
+	 <script type="text/javascript" src="tlc1_eliminate_copia.js"></script>
+	 <!--Enclaces a las carpetas del buscador-->
+
+     <script src="leaflet-search-master\src\leaflet-search.js"></script>
+     <link rel="stylesheet" href="leaflet-search-master\src\leaflet-search.css" />
+	 
+<!--Objeto Div que incluye la apariencia del marco del mapa-->
+ <style>
+  #map { 
+	  width: 100%;
+	  height: 900px;
+	  box-shadow: 5px 5px 5px #888;
+  }
+
+/*Aqui comienza el codigo para poner leyenda*/
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
+
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    .mapboxgl-ctrl {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background-color: #ffffff;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .legend-circle {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }  
+
+
+ </style>
+ 
+ </head>
+  <body>
+   <div id="map"></div><!--Objeto div que inserta el mapa-->
+
+   <div id="legend" class="mapboxgl-ctrl">
+    <h3>Simbología</h3>
+    <ul>
+      <li><span class="legend-circle" style="background-color: #34b411;"></span> Poligonos anteriores </li>
+      <li><span class="legend-circle" style="background-color: #d41491;"></span> Polígonos recalibrados </li>
+      
+      
+    </ul>
+  </div>
+
+
+ <script>
+ 
+ var map = L.map("map").setView([19.2536, -99.6066], 14);
+	
+	//Esta linea añade un mapa base o las capas de openstreet map en este caso
+    L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+        maxZoom: 18
+      }).addTo(map);
+
+////////////Función que agrega color y estilo a un poligono 
+      function stylePolygon(feature) {
+ return {
+   weight: 1.5, // grosor de línea
+   color: 'black', // color de línea
+   opacity: 1.0, // tansparencia de línea
+   fillColor: '#34b411', // color de relleno
+   fillOpacity: 0.6 // transparencia de relleno
+ };
+};
+
+var anterior = new L.geoJson(tlc_noeli, {
+ style: stylePolygon
+}).addTo(map);
+
+///////////////////////
+
+
+
+
+
+
+////////////Recuerda nombrar las funciones con otro estilo a la otra capa 
+    function stylePolygon2(feature) {
+ return {
+   weight: 1.5, // grosor de línea
+   color: 'black', // color de línea
+   opacity: 1.0, // tansparencia de línea
+   fillColor: '#d41491', // color de relleno
+   fillOpacity: 0.6 // transparencia de relleno
+ };
+};
+
+var calibra = new L.geoJson(tlc_eli, {
+ style: stylePolygon2
+}).addTo(map);
+
+
+
+
+	
+//var actual = L.geoJson(poli_22).addTo(map); La llamada normal de variables para cargar al mapa 
+//var anter = L.geoJson(poli_21).addTo(map); Se comenataron porque se llamaron con funciones para ponerles color 
+
+
+var overlayMaps = {
+    "Poligonos anteriores": anterior,
+    "Polígonos recalibrados": calibra
+};
+
+
+var layerControl = L.control.layers(overlayMaps).addTo(map);
+
+
+
+
+
+
+  
+//'<h1>'+feature.properties.id+'</h1><p>numero de puntos: '+feature.properties.NUMPOINTS+'</p>'
+ </script>
+ </body> 
+ </html>
